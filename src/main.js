@@ -71,7 +71,15 @@ function convertKC(kelvins) {
 }
 
 function populateCityDropdown() {
-  const cities = ["Taipei", "Taichung", "Hsinchu", "Hualian", "Other"];
+  const cities = [
+    "Taipei",
+    "Shanghai",
+    "Beijing",
+    "Taichung",
+    "Hsinchu",
+    "Hualian",
+    "Other",
+  ];
   select = document.querySelector("#form > #city");
   select.setAttribute("onchange", "loadCity()");
   for (let i = 0; i < cities.length; i++) {
