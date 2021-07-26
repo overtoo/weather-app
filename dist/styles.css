@@ -5,6 +5,11 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
+#container {
+  width: 70%;
+  margin: 0 auto;
+}
+
 h1 a,
 h2 a,
 h3 a,
@@ -41,7 +46,7 @@ h6 {
 
 #header {
   /* font-size: 40px; */
-  margin: 20px auto 20px auto;
+  margin: 20px 0px 20px 0px;
   display: block;
 }
 
@@ -70,6 +75,7 @@ select#city {
 }
 
 h2 {
+  width: 300px;
   font-size: 24px;
   padding-bottom: 2px;
   border-bottom: 3px solid black;
@@ -122,4 +128,8 @@ h3 {
   /* padding: 0px; */
   margin-bottom: 5px;
   margin-top: 5px;
+}
+
+.inactive {
+  display: none;
 }

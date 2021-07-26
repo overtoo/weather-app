@@ -5,22 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="dist/styles.css" />
     <link rel="stylesheet" href="skeleton.css" />
-    <title>Taiwan Burning</title>
+    <title>Taiwan</title>
   </head>
   <body>
     <div id="container">
       <div id="form-container">
         <form id="form">
           <!-- <label for="city"></label> -->
-          <select id="city" id="fname" name="city">
+          <select id="city" name="city">
             <!-- <option class="option">London</option>
             <option class="option">Melbourne</option> -->
             <!-- generated dynamically -->
           </select>
+          <input
+            class="inactive"
+            placeholder="Enter City.."
+            type="text"
+            id="inputCity"
+          />
         </form>
       </div>
       <header id="header">
-        <h1><span id="dynamic-city">n/a</span> BURNING</h1>
+        <h1><span id="dynamic-city">n/a</span></h1>
       </header>
       <div id="info"></div>
       <div id="history"></div>
@@ -29,7 +35,7 @@
         <h3>TEMPERATURE</h3>
         <div
           id="current-temp"
-          class="current-visible"
+          class="current-visible live-data"
           style="visibility: visible; display: block"
         >
           <span id="dynamic-temperature">n/a</span> °C
@@ -37,7 +43,7 @@
         <h3>FEELS LIKE</h3>
         <div
           id="current-feels-like"
-          class="current-visible"
+          class="current-visible live-data"
           style="visibility: visible; display: block"
         >
           <span id="dynamic-feels-like">n/a</span> °C
@@ -45,7 +51,7 @@
         <h3>HUMIDITY</h3>
         <div
           id="current-humidity"
-          class="current-visible"
+          class="current-visible live-data"
           style="visibility: visible; display: block"
         >
           <span id="dynamic-humidity">n/a</span> %
@@ -54,14 +60,14 @@
       <div id="forecast" class="column">
         <h2>FORECAST</h2>
         <h3>TODAY</h3>
-        <p id="today-description"></p>
-        <div class="minmax">
+        <p id="today-description" class="live-data"></p>
+        <div class="minmax live-data">
           <div class="min" id="today-min"></div>
           <div class="max" id="today-max"></div>
         </div>
         <h3>TOMORROW</h3>
         <p id="tomorrow-description"></p>
-        <div class="minmax">
+        <div class="minmax live-data">
           <div class="min" id="tomorrow-min">$</div>
           <div class="max" id="tomorrow-max">$1</div>
         </div>

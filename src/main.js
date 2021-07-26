@@ -5,7 +5,6 @@ async function getWeatherData(location) {
   try {
     const response = await fetch(url, { mode: "cors" });
     const json = await response.json();
-    // console.log(json);
     const responseForecast = await fetch(urlForecast, { mode: "cors" });
     const forecast = await responseForecast.json();
     const data = processWeather(json, forecast);
@@ -13,14 +12,12 @@ async function getWeatherData(location) {
   } catch (error) {
     const response = await fetch(url, { mode: "cors" });
     const json = await response.json();
-    // console.log(json);
     displayError(json.message);
   }
 }
 
 function displayError(msg) {
   info = document.querySelector("#info");
-  para = document.createElement("p");
   info.classList = "error";
   info.textContent = "BEEP BOOP BAP ERROR: " + msg;
 }
@@ -31,36 +28,40 @@ function clearError() {
   info.classList = "";
 }
 
+function processTomorrow(forecast) {
+  forecastObj = {};
+  // console.log(forecast.list);
+  temperatures = [];
+
+  for (let i = 0; i < 16; i++) {
+    let pulledTime = forecast.list[i].dt_txt + " UTC";
+    let conv = new Date(pulledTime);
+    let today = new Date();
+    tomorrowDate = today.getDate() + 1;
+    if (conv.getDate() == tomorrowDate) {
+      temperatures.push(forecast.list[i].main.temp);
+      forecastObj[conv.getDate() + ":" + conv.getHours()] = convertKC(
+        forecast.list[i].main.temp
+      );
+    }
+  }
+  return temperatures;
+}
+
 function processWeather(owmData, forecast) {
   const data = {};
   data.current_temp_C = convertKC(owmData.main.temp);
   data.feels_like_C = convertKC(owmData.main.feels_like);
-  data.temp_max_C = convertKC(owmData.main.temp_max);
-  data.temp_min_C = convertKC(owmData.main.temp_min);
+  data.temp_max_C = Math.round(convertKC(owmData.main.temp_max));
+  data.temp_min_C = Math.round(convertKC(owmData.main.temp_min));
+  data.tomorrowMin = Math.round(
+    convertKC(Math.min(...processTomorrow(forecast)))
+  );
+  data.tomorrowMax = Math.round(
+    convertKC(Math.max(...processTomorrow(forecast)))
+  );
   data.humidity = owmData.main.humidity;
   data.description = owmData.weather[0].description;
-  data.mainIgnore = owmData.weather[0].main; //ignore this
-
-  forecastObj = {};
-  console.log(forecast.list);
-
-  for (let i = 0; i < 20; i++) {
-    console.log(convertKC(forecast.list[i].main.temp));
-    let pulledTime = forecast.list[i].dt_txt + " UTC";
-    // console.log(pulledTime);
-    let conv = new Date(pulledTime);
-    // console.log(conv.toString());
-    // console.log(conv.getHours());
-    forecastObj[conv.getDay() + " + " + conv.getHours()] = convertKC(
-      forecast.list[i].main.temp
-    );
-    let today = new Date();
-    let time =
-      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    // console.log(today);
-    // break;
-  }
-  console.table(forecastObj);
 
   return data;
 }
@@ -71,17 +72,9 @@ function convertKC(kelvins) {
 }
 
 function populateCityDropdown() {
-  const cities = [
-    "Taipei",
-    "Shanghai",
-    "Beijing",
-    "Taichung",
-    "Hsinchu",
-    "Hualian",
-    "Other",
-  ];
+  const cities = ["Taipei", "Taichung", "Kaohsiung", "Tainan", "Other"];
   select = document.querySelector("#form > #city");
-  select.setAttribute("onchange", "loadCity()");
+  select.setAttribute("onchange", "loadPage()");
   for (let i = 0; i < cities.length; i++) {
     let city = cities[i];
     let option = document.createElement("option");
@@ -95,25 +88,51 @@ function populateCityDropdown() {
 
 populateCityDropdown();
 
-loadCity();
+loadPage();
+
+function manualCity() {
+  hideData();
+  hideHeader();
+  input = document.getElementById("inputCity");
+  input.classList.remove("inactive");
+  activeCity = input.value;
+  input.addEventListener("change", () => {
+    activeCity = input.value;
+    loadCity();
+  });
+}
+
+function loadPage() {
+  if (select.value == "Other") {
+    manualCity();
+  } else {
+    activeCity = select.value;
+    loadCity();
+  }
+}
 
 function loadCity() {
-  const activeCity = select.value;
-  displayCity(activeCity);
+  console.log("active city is " + activeCity);
+  displayHeader(activeCity);
   displayWeather(activeCity);
 }
 
-function displayCity(city) {
+function displayHeader(city) {
   citySpan = document.querySelector("#dynamic-city");
   citySpan.textContent = city;
+}
+
+function hideHeader() {
+  citySpan = document.querySelector("#dynamic-city");
+  citySpan.textContent = "";
 }
 
 async function displayWeather(city) {
   try {
     //clear error
     clearError();
+    showData();
     const data = await getWeatherData(city);
-    console.log(data);
     currentTemp = document.querySelector("#dynamic-temperature");
     currentTemp.textContent = data.current_temp_C;
     currentFeelsLike = document.querySelector("#dynamic-feels-like");
@@ -126,15 +145,27 @@ async function displayWeather(city) {
     tempMax.textContent = data.temp_max_C;
     description = document.querySelector("#today-description");
     description.textContent = data.description;
+    tomorrowMin = document.querySelector("#tomorrow-min");
+    tomorrowMin.textContent = data.tomorrowMin;
+    tomorrowMax = document.querySelector("#tomorrow-max");
+    tomorrowMax.textContent = data.tomorrowMax;
   } catch (error) {
+    console.log("is this?");
     //add error
-    clearData();
+    hideData();
   }
 }
 
-function clearData() {
-  displays = document.querySelectorAll(".current-visible");
+function hideData() {
+  let displays = document.querySelectorAll(".live-data");
   displays.forEach((div) => {
     div.style.display = "none";
+  });
+}
+
+function showData() {
+  let displays = document.querySelectorAll(".live-data");
+  displays.forEach((div) => {
+    div.style.display = "block";
   });
 }
