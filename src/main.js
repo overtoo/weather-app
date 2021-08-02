@@ -1,3 +1,10 @@
+
+populateCityDropdown();
+
+loadPage();
+
+
+
 async function getWeatherData(location) {
   const api = "93ab259b7e65a888016a97094300a94a";
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&APPID=${api}`;
@@ -82,13 +89,7 @@ function populateCityDropdown() {
     option.textContent = city;
     select.appendChild(option);
   }
-
-  //   activeCity = select.value;
 }
-
-populateCityDropdown();
-
-loadPage();
 
 function manualCity() {
   hideData();
@@ -113,11 +114,11 @@ function loadPage() {
 
 function loadCity() {
   console.log("active city is " + activeCity);
-  displayHeader(activeCity);
-  displayWeather(activeCity);
+  showHeader(activeCity);
+  loadWeatherData(activeCity);
 }
 
-function displayHeader(city) {
+function showHeader(city) {
   citySpan = document.querySelector("#dynamic-city");
   citySpan.textContent = city;
 }
@@ -127,11 +128,10 @@ function hideHeader() {
   citySpan.textContent = "";
 }
 
-async function displayWeather(city) {
+async function loadWeatherData(city) {
   try {
     //clear error
     clearError();
-    showData();
     const data = await getWeatherData(city);
     currentTemp = document.querySelector("#dynamic-temperature");
     currentTemp.textContent = data.current_temp_C;
@@ -149,9 +149,8 @@ async function displayWeather(city) {
     tomorrowMin.textContent = data.tomorrowMin;
     tomorrowMax = document.querySelector("#tomorrow-max");
     tomorrowMax.textContent = data.tomorrowMax;
+    showData();
   } catch (error) {
-    console.log("is this?");
-    //add error
     hideData();
   }
 }
